@@ -1,0 +1,6 @@
+# eslint ignore
+
+build/
+dist/
+test/
+node_modules/
