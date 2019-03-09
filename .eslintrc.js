@@ -13,9 +13,10 @@ module.exports = {
   },
   "globals": {
     // "window": true
+    "global": true
   },
   "env": {
-    "browser": false,
+    "browser": true,
     "es6": true,
     "node": true,
     "mocha": true
