@@ -5,6 +5,7 @@ const stat = promisify(fs.stat);
 const HandleBars = require("handlebars")
 const config = require("../config/defaultConfig")
 const mime = require("./mime")
+const compress = require("./compress")
 
 const readdir = promisify(fs.readdir);
 const tplPath = path.join(__dirname, "../template/dir.tpl");
@@ -14,13 +15,17 @@ const template = HandleBars.compile(source)
 module.exports = async function(req, res, filePath) {
     try {
         const stats = await stat(filePath);
-        if (stats.isFile()) {
+        if (stats.isFile()) { // 文件直接读流响应到页面
             const contentType = mime(filePath)
             res.statusCode = 200;
             res.setHeader("Content-Type", contentType + ";charset=utf-8")
 
-            fs.createReadStream(filePath).pipe(res);
-        } else if (stats.isDirectory()) {
+            let rs = fs.createReadStream(filePath).pipe(res);
+            if(filePath.match(config.compress)) {
+              rs = compress(rs, req, res)
+            }
+            rs.pipe(res)
+        } else if (stats.isDirectory()) { // 文件夹，响应html页面，并展示下一级文件列表
             const files = await readdir(filePath);
             res.statusCode = 200;
             res.setHeader("Content-Type", "text/html;charset=utf-8")

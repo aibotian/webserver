@@ -1,4 +1,7 @@
 const path = require("path")
+
+// mime类型
+// TODO 添加文件图标
 const mimeTypes = {
   txt:"text/plain",
   doc:"application/msword",
