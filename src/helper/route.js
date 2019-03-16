@@ -6,6 +6,8 @@ const HandleBars = require("handlebars")
 const config = require("../config/defaultConfig")
 const mime = require("./mime")
 const compress = require("./compress")
+const range = require("./range");
+const isFresh = require("./cache")
 
 const readdir = promisify(fs.readdir);
 const tplPath = path.join(__dirname, "../template/dir.tpl");
@@ -17,10 +19,24 @@ module.exports = async function(req, res, filePath) {
         const stats = await stat(filePath);
         if (stats.isFile()) { // 文件直接读流响应到页面
             const contentType = mime(filePath)
-            res.statusCode = 200;
             res.setHeader("Content-Type", contentType + ";charset=utf-8")
+            // 浏览器缓存
+            if(isFresh(stats, req, res)) {
+              res.statusCode = 304;
+              res.end();
+              return;
+            }
 
-            let rs = fs.createReadStream(filePath).pipe(res);
+            let rs;
+            const { code,start,end } = range(stats.size, req, res);
+            if(code === 200) {
+              res.statusCode = 200;
+              rs = fs.createReadStream(filePath)
+            } else {
+              res.statusCode = 206;
+              rs = fs.createReadStream(filePath, {start, end});
+            }
+            rs = fs.createReadStream(filePath).pipe(res);
             if(filePath.match(config.compress)) {
               rs = compress(rs, req, res)
             }
