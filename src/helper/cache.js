@@ -21,10 +21,6 @@ module.exports = function isFresh(stats, req, res) {
 
   const lastModified = req.headers['if-modified-since'];
   const etag = req.headers['if-none-match'];
-  console.log(lastModified)
-  console.log(res.getHeader('Last-Modified'))
-  console.log(etag)
-  console.log(res.getHeader("ETag"))
   // 第一次请求
   if (!lastModified && !etag) {
     return false;

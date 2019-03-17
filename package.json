@@ -1,8 +1,11 @@
 {
   "name": "webserver",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "Tiny nodejs static Web server",
-  "main": "index.js",
+  "main": "src/app.js",
+    "bin": {
+        "webserver": "bin/webserver"
+    },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",

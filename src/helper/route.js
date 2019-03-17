@@ -3,7 +3,7 @@ const path =require("path")
 const promisify = require("util").promisify;
 const stat = promisify(fs.stat);
 const HandleBars = require("handlebars")
-const config = require("../config/defaultConfig")
+// const config = require("../config/defaultConfig")
 const mime = require("./mime")
 const compress = require("./compress")
 const range = require("./range");
@@ -14,7 +14,7 @@ const tplPath = path.join(__dirname, "../template/dir.tpl");
 const source = fs.readFileSync(tplPath, "utf8");  // 二进制，强制转换为字符串
 const template = HandleBars.compile(source)
 
-module.exports = async function(req, res, filePath) {
+module.exports = async function(req, res, filePath,config) {
     try {
         const stats = await stat(filePath);
         if (stats.isFile()) { // 文件直接读流响应到页面
